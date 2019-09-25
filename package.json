@@ -1,0 +1,36 @@
+{
+  "name": "quench-lite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    ".": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/IvanAphanasyev/quench-lite.git"
+  },
+  "keywords": [
+    "node.js"
+  ],
+  "author": "Ivan Aphanasyev @bot_18 <nekaktotak2@gmail.com>",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/IvanAphanasyev/quench-lite#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "http-errors": "^1.7.3",
+    "morgan": "^1.9.1",
+    "path": "^0.12.7",
+    "pg": "^7.12.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.19.0",
+    "sequelize-cli": "^5.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  }
+}
