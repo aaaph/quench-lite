@@ -17,10 +17,11 @@ module.exports = {
     operatorsAliases: false
   },
   production: {
-    username: "root",
-    password: null,
-    database: "database_production",
-    host: "127.0.0.1",
+    username: "eigokohstwhawk",
+    password:
+      "be22e2957c0c472aec0deba95a5fad43194063f5ac59b090c238804554229b23",
+    database: "dcesa9argvpk4d",
+    host: "ec2-107-20-198-176.compute-1.amazonaws.com",
     dialect: "postgres",
     operatorsAliases: false
   }
