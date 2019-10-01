@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const models = require("../models");
+const models = require("../../models");
+const jwt = require("../../lib/jwt");
 
 router.get("/", async (req, res, next) => {
   const users = await models.user.findAll();
@@ -10,7 +11,7 @@ router.get("/", async (req, res, next) => {
 const getUser = async (req, res, next) => {
   const user = await models.user
     .findByPk(req.params.id)
-    .catch(err => next(Object.assign(err, { status: 400 })));
+    .catch(err => next({ ...err, ...{ status: 400 } }));
   if (!user) {
     const err = {
       message: "User with id not found",
@@ -21,9 +22,19 @@ const getUser = async (req, res, next) => {
   req.user = user;
   await next();
 };
+router.get("/:id", async (req, res, next) => {
+  const user = await models.user
+    .findByPk(req.params.id)
+    .catch(err => next({ ...err, ...{ status: 400 } }));
+  if (!user) {
+    next({ status: 204 });
+  }
+  res.status(200).send(user);
+});
 router.get("/:id", getUser, async (req, res, next) => {
   res.status(200).send(req.user);
 });
+
 router.post("/create", async (req, res, next) => {
   const obj = {
     email: req.body.email,
@@ -35,6 +46,7 @@ router.post("/create", async (req, res, next) => {
   });
   res.status(201).send(user);
 });
+
 router.patch("/:id/update", getUser, async (req, res, next) => {
   const obj = {
     email: req.body.email,
@@ -46,9 +58,9 @@ router.patch("/:id/update", getUser, async (req, res, next) => {
   });
   res.status(200).send(updated);
 });
+
 router.delete("/:id/delete", getUser, async (req, res, next) => {
   await req.user.destroy().catch(err => next(err));
   res.status(204).send("success");
 });
-
 module.exports = router;

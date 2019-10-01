@@ -2,14 +2,16 @@ const app = require("./app");
 const debug = require("debug")("quench-lite:server");
 const http = require("http");
 const config = require("dotenv").config();
-console.log("config from .env: ", config);
+//console.log("config from .env: ", config);
 
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
 
 const server = http.createServer(app);
 
-server.listen(port);
+server.listen(port, () => {
+  console.log(`server listen on port ${port} with pid ${process.pid}`);
+});
 server.on("error", onError);
 server.on("listening", onListening);
 

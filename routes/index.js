@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const auth = require("./auth");
+const v1 = require("./v1");
 
-router.use("/auth", auth);
+router.use("/v1", v1);
 
 router.get("/", async (req, res, next) => {
-  res.send({ status: 228 });
+  res.status(404).send("unused url");
 });
 
 module.exports = router;
