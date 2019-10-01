@@ -2,7 +2,7 @@ const app = require("./app");
 const debug = require("debug")("quench-lite:server");
 const http = require("http");
 const config = require("dotenv").config();
-//console.log("config from .env: ", config);
+console.log("config from .env: ", config);
 
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
