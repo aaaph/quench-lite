@@ -36,6 +36,22 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+const attrTypes = [
+  "Cocktails",
+  "Dishes",
+  "Mixologists",
+  "Followers",
+  "Musicians",
+  "Artists",
+  "Performers"
+];
+attrTypes.forEach(item => {
+  const obj = {
+    value: item
+  };
+  db.attributeType.findOrCreate({ where: obj }).catch(err => console.log(err));
+});
+//rsdb.attributeType.destroy({ where: {} });
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
