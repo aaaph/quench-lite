@@ -3,11 +3,11 @@ const router = express.Router();
 
 const auth = require("./auth");
 const users = require("./users");
-const current = require("./current");
+const pages = require("./pages");
 
 router.use("/auth", auth);
 router.use("/users", users);
-router.use("/current", current);
+router.use("/pages", pages);
 
 router.use("/", (req, res, next) => {
   console.log(req.headers);

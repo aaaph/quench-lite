@@ -1,8 +1,10 @@
 const express = require("express");
-const router = express.Router();
+const router = express();
 
-const models = require("../../models");
-const jwt = require("../../lib/jwt");
+const models = require("../../../models");
+
+const current = require("./current");
+router.use("/current", current);
 
 router.get("/", async (req, res, next) => {
   const users = await models.user.findAll();
@@ -63,4 +65,5 @@ router.delete("/:id/delete", getUser, async (req, res, next) => {
   await req.user.destroy().catch(err => next(err));
   res.status(204).send("success");
 });
+
 module.exports = router;

@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const models = require("../../models");
-const jwt = require("../../lib/jwt");
+const models = require("../../../models");
+const jwt = require("../../../lib/jwt");
 
 const verify = async (req, res, next) => {
   const token = req.headers.accesstoken;
