@@ -10,6 +10,7 @@ router.use("/users", users);
 router.use("/current", current);
 
 router.use("/", (req, res, next) => {
+  console.log(req.headers);
   res.status(404).send("unused url");
 });
 module.exports = router;
