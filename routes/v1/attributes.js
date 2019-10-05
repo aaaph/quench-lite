@@ -5,7 +5,7 @@ const models = require("../../models");
 const fb = require("../../lib/facebookAPI");
 
 router.get("/", async (req, res, next) => {
-  const attrs = await models.attribute.findAll();
+  const attrs = (await models.attributeType.findAll()).map(type => type.value);
   res.status(200).send(attrs);
 });
 

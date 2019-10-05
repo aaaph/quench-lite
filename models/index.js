@@ -51,6 +51,21 @@ attrTypes.forEach(item => {
   };
   db.attributeType.findOrCreate({ where: obj }).catch(err => console.log(err));
 });
+
+const tagType = [
+  "Venue",
+  "Cuisine",
+  "Discount",
+  "Performer",
+  "Marketing",
+  "Recommendation"
+];
+tagType.forEach(item => {
+  const obj = {
+    value: item
+  };
+  db.tagType.findOrCreate({ where: obj }).catch(err => console.log(err));
+});
 //rsdb.attributeType.destroy({ where: {} });
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
