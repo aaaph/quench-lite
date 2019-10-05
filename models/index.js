@@ -57,8 +57,14 @@ const tagType = [
   "Cuisine",
   "Discount",
   "Performer",
-  "Marketing",
-  "Recommendation"
+  "Attribute",
+  "Consultancy",
+  "Recomendation",
+  "Quench",
+  "External",
+  "Brand",
+  "Owner",
+  "Distributor"
 ];
 tagType.forEach(item => {
   const obj = {

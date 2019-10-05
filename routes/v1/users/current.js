@@ -4,6 +4,8 @@ const router = express.Router();
 const models = require("../../../models");
 const jwt = require("../../../lib/jwt");
 
+const _ = require("lodash");
+
 const verify = async (req, res, next) => {
   const token = req.headers.accesstoken;
   const payload = await jwt.getPayload(token).catch(err => {
@@ -24,7 +26,9 @@ const getUser = async (req, res, next) => {
   next();
 };
 router.get("/", verify, getUser, async (req, res, next) => {
-  res.status(200).send(req.user);
+  const obj = _.omit(req.user.dataValues, "facebook_access_token");
+
+  res.status(200).send(obj);
 });
 router.delete("/delete", verify, getUser, async (req, res, next) => {
   await models.refreshToken

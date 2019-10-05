@@ -8,6 +8,7 @@ const jwt = require("../../lib/jwt");
 router.post("/login", async (req, res, next) => {
   const inputToken = req.body.facebook_access_token;
   const fbUser = await fb.getUser(inputToken);
+  console.log(fbUser);
   if (fbUser.error) {
     next({ ...fbUser.error, ...{ status: 400 } });
     return;
@@ -18,6 +19,8 @@ router.post("/login", async (req, res, next) => {
     .catch(err => next(err));
   if (!user) {
     const obj = {
+      name: fbUser.name,
+      picture: fbUser.picture.data.url,
       email: fbUser.email,
       facebook_id: fbUser.id,
       facebook_access_token: inputToken
@@ -33,7 +36,7 @@ router.post("/login", async (req, res, next) => {
   //console.log(updatedUser.dataValues);
 
   const jwtPair = await jwt.createPair(user.id);
-
+  updatedUser.facebook_access_token = undefined;
   res.status(200).json({ jwt: jwtPair, user: updatedUser });
 });
 router.post("/check", async (req, res, next) => {
