@@ -4,11 +4,23 @@ const router = express.Router();
 const models = require("../../models");
 const fb = require("../../lib/facebookAPI");
 
-router.get("/", async (req, res, next) => {
+router.get("/types", async (req, res, next) => {
   const attrs = (await models.attributeType.findAll()).map(type => type.value);
   res.status(200).send(attrs);
 });
-
+router.get("/types/:type", async (req, res, next) => {
+  const type = await models.attributeType
+    .findOne({ where: { value: req.params.type } })
+    .catch(err => next(err));
+  if (!type) {
+    next({ message: "type does not exit", status: 400 });
+    return;
+  }
+  const attrs = (await models.attribute.findAll()).filter(
+    attr => attr.type == type.id
+  );
+  res.status(200).send(attrs);
+});
 const getPage = async (req, res, next) => {
   const token = req.user.facebook_access_token,
     pageId = req.params.pageId;
@@ -22,7 +34,7 @@ const getPage = async (req, res, next) => {
 const getAttr = async (req, res, next) => {
   const id = req.params.attrId;
   const attr = await models.attribute.findByPk(id).catch(err => {
-    next({ ...err, ...{ status: 400 } });
+    next(err);
     return;
   });
   if (!attr) {
@@ -40,6 +52,13 @@ router.post("/:pageId/create", getPage, async (req, res, next) => {
   if (!type) {
     next({ message: "type doesnt exist", status: 400 });
   }
+  const exist = await models.tag
+    .findOne({ where: { name: req.body.name } })
+    .catch(err => next(err));
+  if (exist) {
+    res.status(409).send("Attribute already exist");
+    return;
+  }
 
   const obj = {
     pageId: req.page.id,
@@ -55,11 +74,14 @@ router.post("/:pageId/create", getPage, async (req, res, next) => {
 });
 
 router.get("/:pageId", getPage, async (req, res, next) => {
-  const attrs = await models.attribute.findAll({
-    where: { pageId: req.page.id }
-  });
+  const attrs = await models.attribute
+    .findAll({
+      where: { pageId: req.page.id }
+    })
+    .catch(err => next(err));
   res.status(200).send(attrs);
 });
+
 router.get("/:pageId/:attrId", getPage, getAttr, async (req, res, next) => {
   res.status(200).send(req.attr);
 });

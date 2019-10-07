@@ -27,7 +27,8 @@ module.exports = (sequelize, dataTypes) => {
     },
     url: {
       type: dataTypes.STRING(300),
-      allowNull: false
+      allowNull: false,
+      defaultValue: "https://i.ibb.co/PNTjmNG/aattr.png"
     }
   });
   return attribute;

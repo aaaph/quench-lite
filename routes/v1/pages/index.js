@@ -12,14 +12,15 @@ const getPage = async (req, res, next) => {
     next({ ...page.error, ...{ status: 400 } });
   }
 
-  req.page = await assignPage(page);
+  req.page = await assignPage(req, page);
   next();
 };
-const assignPage = async fbPage => {
+const assignPage = async (req, fbPage) => {
   let dbPage = await models.page.findByPk(fbPage.id);
   if (!dbPage) {
-    dbPage = await models.page.create({ id: fbPage.id });
+    dbPage = await models.page.create({ id: fbPage.id, userId: req.user.id });
   }
+  //console.log(dbPage.dataValues);
   return { ...fbPage, ...dbPage.dataValues };
 };
 const images = require("./images");
@@ -40,7 +41,7 @@ router.get("/", async (req, res, next) => {
   let pages = await fb.getPages(id, token);
 
   pages = pages.map(async page => {
-    const local = await assignPage(page);
+    const local = await assignPage(req, page);
     return local;
   });
 
@@ -58,10 +59,77 @@ router.get("/connectedPages", async (req, res, next) => {
   const fbPages = (await fb.getPages(id, token))
     .filter(page => conectedPages.includes(page.id))
     .map(async page => {
-      const local = await assignPage(page);
+      const local = await assignPage(req, page);
       return local;
     });
   res.status(200).send(await Promise.all(fbPages));
+});
+router.get("/:pageId/attributes", getPage, async (req, res, next) => {
+  res.redirect(`/api/v1/attributes/${req.page.id}`);
+});
+
+router.get("/:pageId/tags", getPage, async (req, res, next) => {
+  const mediators = await models.mediator.findAll({
+    where: { pageId: req.page.id }
+  });
+  // mediators.forEach(item => console.log(item.dataValues));
+
+  const tags = mediators.map(async mediator => {
+    console.log(mediator.dataValues);
+    const tag = await models.tag.findByPk(mediator.tagId);
+    const type = await models.tagType.findByPk(tag.type);
+    tag.type = type.value;
+    //console.log(tag);
+    return tag;
+  });
+  res.status(200).send(await Promise.all(tags));
+});
+
+router.post("/:pageId/tags/link", getPage, async (req, res, next) => {
+  //input data tag id
+  const tagId = req.body.tagId;
+  const obj = {
+    pageId: req.page.id,
+    tagId: tagId
+  };
+  const mediator = await models.mediator
+    .findOrCreate({ where: obj })
+    .catch(err => next(err));
+  console.log(mediator);
+  if (mediator[1]) {
+    const tag = await models.tag.findByPk(tagId).catch(next);
+    const pages = tag.pages + 1;
+    await tag.update({ pages: pages }).catch(next);
+  }
+  res.redirect(`/api/v1/pages/${req.page.id}/tags`);
+});
+
+router.post("/:pageId/tags/unlink", getPage, async (req, res, next) => {
+  const tagId = req.body.tagId;
+  const obj = {
+    pageId: req.page.id,
+    tagId: tagId
+  };
+  const mediators = await models.mediator
+    .findAll({ where: obj })
+    .catch(err => next(err));
+  if (mediators) {
+    mediators.forEach(async mediator => {
+      await mediator.destroy().catch(err => next(err));
+      const tag = await models.tag.findByPk(tagId).catch(next);
+      const pages = tag.pages - 1;
+      await tag.update({ pages: pages }).catch(next);
+    });
+    res.redirect(`/api/v1/pages/${req.page.id}/tags`);
+  }
+});
+
+router.get("/:pageId/tags/:id", async (req, res, next) => {
+  res.redirect(`/api/v1/tags/${req.params.id}`);
+});
+
+router.patch("/:pageId/tags/:id/update", async (req, res, next) => {
+  res.redirect(307, `/api/v1/tags/${req.params.id}/update`);
 });
 
 router.get("/:pageId", getPage, async (req, res, next) => {
@@ -74,7 +142,7 @@ router.patch("/:pageId/update", getPage, async (req, res, next) => {
   };
   const dbPage = await models.page.findByPk(id).catch(err => next(err));
   const updated = await dbPage.update(obj).catch(err => next(err));
-  const page = await assignPage(req.page);
+  const page = await assignPage(req, req.page);
   res.status(200).send(page);
 });
 

@@ -8,6 +8,7 @@ const auth = require("./auth");
 const users = require("./users");
 const pages = require("./pages");
 const attr = require("./attributes");
+const tags = require("./tags");
 
 const verify = async (req, res, next) => {
   const token = req.headers.accesstoken;
@@ -29,6 +30,7 @@ router.use("/auth", auth);
 router.use("/users", users);
 router.use("/pages", verify, getUser, pages);
 router.use("/attributes", verify, getUser, attr);
+router.use("/tags", verify, getUser, tags);
 
 router.use("/", (req, res, next) => {
   console.log(req.headers);
